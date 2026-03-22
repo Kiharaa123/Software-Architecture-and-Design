@@ -117,4 +117,3 @@ For detailed API reference information, see [api-reference.md](./swe30003-be/doc
 ## Data model
 
 For detailed Data model information, see [data-models.md](./swe30003-be/docs/data-models.md)
->>>>>>> 8e902a7 (DONE)
