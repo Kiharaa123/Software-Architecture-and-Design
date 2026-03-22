@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# Software-Architecture-and-Design
-=======
-# Ride-Sharing
-
-## Getting Started
 
 1. **Clone the Repository**:
 
