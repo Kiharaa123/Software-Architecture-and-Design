@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+enum UserRole {
+  DEVELOPER
+  CUSTOMER
+  DRIVER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  normalizedEmail String    @unique
+  password      String
+  address       String?
+  firstName     String?
+  lastName      String?
+  phone         String?
+  profileImg    String?
+  refreshToken  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role      UserRole
+
+  driver Driver?
+  customer Customer?
+
+  currentLocationId String?
+  currentLocation Location? @relation(fields: [currentLocationId], references: [id])
+
+  @@index([id, email])
+}
+
+model Driver {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  rides Ride[]
+}
+
+model Customer {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  rides Ride[]
+}
+
+enum RideStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
+
+enum VehicleType {
+  BIKE
+  CAR
+  LUXURY
+}
+
+model Ride {
+  id            String    @id @default(cuid())
+  customerId    String
+  customer      Customer  @relation(fields: [customerId], references: [id])
+  driverId      String
+  driver        Driver    @relation(fields: [driverId], references: [id])
+
+  locations Location[]
+
+  vehicleType VehicleType @default(CAR)
+
+  price Float
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+
+
+  status RideStatus @default(PENDING)
+}
+
+model Location {
+  id String @id @default(cuid())
+  name String
+  coordinates Unsupported("geography(Point, 4326)")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rideId String?
+  ride Ride? @relation(fields: [rideId], references: [id])
+
+  users User[]
+}
+
+
+
+
+
+
